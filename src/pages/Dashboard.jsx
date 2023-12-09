@@ -141,9 +141,19 @@ export default function Dashboard() {
         <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">Roll No: <span className="text-gray-400">{formData.rollno}</span></h2>
         <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">Course:<span className="text-gray-400">{formData.course}</span> </h2>
       </div>
-      <div>
-        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">Codeforces Handle: <span className="text-gray-400">{formData.cfhandle}</span></h2>
-        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">Leetcode Handle: <span className="text-gray-400">{formData.lchandle}</span></h2>
+      <div style={{ wordWrap: 'break-word' }}>
+        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">
+        Codeforces Handle: 
+        <a href={`https://codeforces.com/profile/${formData.cfhandle}`} target="_blank" rel="noopener noreferrer">
+          <span className="text-gray-400">{formData.cfhandle}</span>
+        </a>
+      </h2>
+      <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">
+        Leetcode Handle: 
+        <a href={`https://leetcode.com/${formData.lchandle}`} target="_blank" rel="noopener noreferrer">
+          <span className="text-gray-400">{formData.lchandle}</span>
+        </a>
+      </h2>
         <button 
   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
   onClick={() => setEditing(!editing)}
