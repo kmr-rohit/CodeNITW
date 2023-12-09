@@ -25,6 +25,8 @@ export default function Dashboard() {
   const auth = getAuth();
   const user = auth.currentUser;
   const navigate = useNavigate();
+
+
   useEffect(() => {
     async function fetchContestRanks() {
       const xDataArray = [];
@@ -90,8 +92,43 @@ export default function Dashboard() {
   });
 
   const { name, email } = formData;
+
   //console.log(name);
   
+  const [editing, setEditing] = useState(false);
+  const [editData, setEditData] = useState({
+    cfhandle: formData.cfhandle,
+    lchandle: formData.lchandle,
+  });
+
+  const handleInputChange = (event) => {
+    setEditData({
+      ...editData,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const userCollectionRef = collection(db, "users");
+      const userDocRef = doc(userCollectionRef, auth.currentUser.uid);
+      let updateData = {};
+      if (editData.cfhandle) {
+        updateData.cfhandle = editData.cfhandle;
+      }
+      if (editData.lchandle) {
+        updateData.lchandle = editData.lchandle;
+      }
+      if (Object.keys(updateData).length > 0) {
+        await updateDoc(userDocRef, updateData);
+        toast.success("Handles updated successfully!. Reload page to see changes");
+      }
+    } catch (error) {
+      console.error("Error updating handles:", error);
+      toast.error("Error updating handles.");
+    }
+  };
 
   return (
     <>
@@ -107,6 +144,38 @@ export default function Dashboard() {
       <div>
         <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">Codeforces Handle: <span className="text-gray-400">{formData.cfhandle}</span></h2>
         <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">Leetcode Handle: <span className="text-gray-400">{formData.lchandle}</span></h2>
+        <button 
+  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
+  onClick={() => setEditing(!editing)}
+>
+  Edit Handles
+</button>
+{editing && (
+  <form onSubmit={handleFormSubmit} className="mt-4">
+    <input 
+      type="text" 
+      name="cfhandle" 
+      value={editData.cfhandle} 
+      onChange={handleInputChange} 
+      placeholder="Codeforces Handle" 
+      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    />
+    <input 
+      type="text" 
+      name="lchandle" 
+      value={editData.lchandle} 
+      onChange={handleInputChange} 
+      placeholder="Leetcode Handle" 
+      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-4"
+    />
+    <button 
+      type="submit" 
+      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+    >
+      Submit
+    </button>
+  </form>
+)}
       </div>
     </div>
   </div>
