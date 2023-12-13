@@ -39,7 +39,7 @@ async function addOrUpdateData(updatedScoreArray, leaderboardCollectionRef) {
 export default function LeaderboardList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [scoreArray, setScoreArray] = useState([]);
-  const contests = ["480776", "482262","483816" , "486358"]; // Add more contest IDs as needed
+  const contests = ["480776", "482262","483816" , "486358","491056"]; // Add more contest IDs as needed
   const [isPushDataButtonVisible, setPushDataButtonVisible] = useState(true);
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [hasPushedData, setHasPushedData] = useState(false);
@@ -76,7 +76,7 @@ export default function LeaderboardList() {
 
     async function fetchData() {
 
-      // // Uncomment this code to push Updated Leaderboard
+      // Uncomment this code to push Updated Leaderboard
       // let updatedScoreArray = [];
 
       // for (const contest_id of contests) {
@@ -103,22 +103,22 @@ export default function LeaderboardList() {
       setLeaderboardData(leaderboardData);
 
       
-     // Pushing Ranks into firebase 
-      // if(!hasPushedData){
-      // for(const contest_id of contests){
-      //   const data = await getStandings(contest_id);
-      //   if (data && data.status === "OK") {
-      //     const contestRanksItem = getContestRanks(data , contest_id);
-      //     const contestRanksCollectionRef = collection(db, "contestRanks");
-      //     const q = query(contestRanksCollectionRef, where("contestId", "==", contest_id));
-      //     const querySnapshot = await getDocs(q);
-      //     if (querySnapshot.empty) {
-      //       await addDoc(contestRanksCollectionRef, contestRanksItem);
-      //     }
-      //   }
-      // }
-      // setHasPushedData(true);
-      // }
+    //  // Pushing Ranks into firebase 
+    //   if(!hasPushedData){
+    //   for(const contest_id of contests){
+    //     const data = await getStandings(contest_id);
+    //     if (data && data.status === "OK") {
+    //       const contestRanksItem = getContestRanks(data , contest_id);
+    //       const contestRanksCollectionRef = collection(db, "contestRanks");
+    //       const q = query(contestRanksCollectionRef, where("contestId", "==", contest_id));
+    //       const querySnapshot = await getDocs(q);
+    //       if (querySnapshot.empty) {
+    //         await addDoc(contestRanksCollectionRef, contestRanksItem);
+    //       }
+    //     }
+    //   }
+    //   setHasPushedData(true);
+    //   }
 
       
     }
@@ -189,14 +189,18 @@ export default function LeaderboardList() {
       }
       totalScore += item.rating;
     }
-
+    const totalPenalty = obj.result.rows[0].penalty;
+    console.log(totalPenalty);
     for (const row of obj.result.rows) {
       const points = row.points;
       const penalty = row.penalty;
       const handle = row.party.members[0].handle;
       const rollno = 0;
-      let Score = 100 * points + (1 - penalty / totalScore);
-      Score = Score.toFixed(2);
+      let Score = 0;
+      if(points){
+        Score= 100 * points - penalty / 100 ;
+        Score = Score.toFixed(2);
+      }
 
       // Check if handle already exists in updatedScoreArray
       const existingUserIndex = updatedScoreArray.findIndex(
@@ -219,7 +223,7 @@ export default function LeaderboardList() {
         });
       }
     }
-    //console.log(updatedScoreArray);
+    console.log(updatedScoreArray);
 
     return updatedScoreArray;
   }

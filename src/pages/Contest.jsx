@@ -53,27 +53,30 @@ export default function Contest() {
     }
 
     async function getOtherContest() {
-      const apiUrl = 'https://kontests.net/api/v1/all';
+      const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+      const targetUrl = 'https://clist.by/api/v4/json/contest/?upcoming=true&end_time__during=1728000&duration__gt=5400&duration__lt=10800&username=kmrrohit&api_key=b6bee0d321166ca219f3c2d83da9626a14043d93';
+      const apiUrl = proxyUrl + targetUrl;
       try {
         const response = await fetch(apiUrl);
         if (response.status === 200) {
           const data = await response.json();
           console.log(data);
+          console.log("Entered data")
           const activeContests = [];
           const upcomingContests = [];
-          for(let item of data){
-            if(item.site == "AtCoder" || item.site == "LeetCode" || item.site == "CodeChef" || item.site == "CodeForces" ){
+          for(let item of data.objects){
+            if(item.host == "atcoder.jp" || item.host == "leetcode.com" || item.host == "codechef.com" || item.host == "codeforces.com" ){
               let unix_timestamp = item.duration;
               var modifiedDuration = unix_timestamp/60;
               
               //console.log(modifiedDuration); 
               const currentDate = new Date();
-              var inputDateStr = item.start_time;
-              if(item.site == "CodeChef"){
-                const tempDate = inputDateStr;
-                const modifiedTemp = tempDate.replace(" UTC", "Z");
-                inputDateStr = modifiedTemp;
-              }
+              var inputDateStr = item.start;
+              // if(item.site == "CodeChef"){
+              //   const tempDate = inputDateStr;
+              //   const modifiedTemp = tempDate.replace(" UTC", "Z");
+              //   inputDateStr = modifiedTemp;
+              // }
               const inputDate = new Date(inputDateStr);
               
               const options = {
@@ -88,11 +91,12 @@ export default function Contest() {
               var modifiedStartTime = formattedDate;
               let contestItem = {
                 imageName : item.site,
-                link : item.url,
-                name : item.name,
+                link : item.href,
+                name : item.event,
                 startingTime : modifiedStartTime,
                 duration : modifiedDuration
               }
+              console.log(contestItem);
               const contestEndTime = inputDate.getTime() + modifiedDuration * 60 * 1000;
               if(currentDate.getTime() < contestEndTime) {
                 if(currentDate.getTime() >= inputDate.getTime()) {
